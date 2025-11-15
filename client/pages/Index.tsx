@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -202,9 +204,12 @@ export default function Login() {
             {/* Footer */}
             <p className="text-center text-sm text-muted-foreground mt-8">
               Don't have an account?{" "}
-              <a href="#" className="text-primary hover:text-primary/80 font-semibold transition-colors">
+              <Link
+                to="/signup"
+                className="text-primary hover:text-primary/80 font-semibold transition-colors"
+              >
                 Sign up
-              </a>
+              </Link>
             </p>
           </div>
         </div>

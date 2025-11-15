@@ -1,0 +1,311 @@
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  LogOut,
+  Send,
+  Plus,
+  MessageSquare,
+  Menu,
+  X,
+} from "lucide-react";
+
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+
+interface Conversation {
+  id: string;
+  title: string;
+  messages: Message[];
+}
+
+export default function Chat() {
+  const navigate = useNavigate();
+  const [conversations, setConversations] = useState<Conversation[]>([
+    {
+      id: "1",
+      title: "New Conversation",
+      messages: [],
+    },
+  ]);
+  const [currentConversationId, setCurrentConversationId] = useState("1");
+  const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const currentConversation = conversations.find(
+    (c) => c.id === currentConversationId
+  );
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [currentConversation?.messages]);
+
+  const handleLogout = () => {
+    navigate("/");
+  };
+
+  const handleNewConversation = () => {
+    const newId = Date.now().toString();
+    const newConversation: Conversation = {
+      id: newId,
+      title: "New Conversation",
+      messages: [],
+    };
+    setConversations([...conversations, newConversation]);
+    setCurrentConversationId(newId);
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!inputValue.trim() || !currentConversation) {
+      return;
+    }
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: inputValue,
+      timestamp: new Date(),
+    };
+
+    setConversations(
+      conversations.map((conv) => {
+        if (conv.id === currentConversationId) {
+          return {
+            ...conv,
+            messages: [...conv.messages, userMessage],
+          };
+        }
+        return conv;
+      })
+    );
+
+    setInputValue("");
+    setIsLoading(true);
+
+    try {
+      // Call dummy chat API
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: inputValue,
+          conversationId: currentConversationId,
+        }),
+      });
+
+      const data = await response.json();
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.response || "I couldn't process your message. Please try again.",
+        timestamp: new Date(),
+      };
+
+      setConversations(
+        conversations.map((conv) => {
+          if (conv.id === currentConversationId) {
+            const updatedMessages = [...conv.messages, assistantMessage];
+            return {
+              ...conv,
+              messages: updatedMessages,
+              title:
+                conv.title === "New Conversation"
+                  ? inputValue.substring(0, 30)
+                  : conv.title,
+            };
+          }
+          return conv;
+        })
+      );
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="h-screen flex bg-background">
+      {/* Sidebar */}
+      <div
+        className={`fixed md:relative z-40 h-screen w-64 bg-card border-r border-border transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h1 className="text-lg font-bold font-display text-foreground">
+              Chat App
+            </h1>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* New Chat Button */}
+          <button
+            onClick={handleNewConversation}
+            className="m-4 flex items-center gap-2 justify-center w-full px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            New Chat
+          </button>
+
+          {/* Conversations List */}
+          <div className="flex-1 overflow-y-auto px-2 py-4">
+            <div className="space-y-2">
+              {conversations.map((conv) => (
+                <button
+                  key={conv.id}
+                  onClick={() => {
+                    setCurrentConversationId(conv.id);
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-2 truncate ${
+                    currentConversationId === conv.id
+                      ? "bg-primary/20 text-primary"
+                      : "text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate text-sm">{conv.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sidebar Footer */}
+          <div className="border-t border-border p-4">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors font-medium text-sm"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-border bg-card">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden text-muted-foreground hover:text-foreground"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h2 className="text-lg font-semibold text-foreground">
+              {currentConversation?.title || "Chat"}
+            </h2>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors text-sm font-medium"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-3xl mx-auto px-4 py-8">
+            {currentConversation?.messages && currentConversation.messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
+                  <MessageSquare className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold font-display text-foreground mb-2">
+                  Start a new conversation
+                </h3>
+                <p className="text-muted-foreground max-w-sm">
+                  Ask me anything. I'm here to help with questions, creative writing, coding, and much more.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {currentConversation?.messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${
+                      msg.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-xs lg:max-w-md xl:max-w-lg px-4 py-3 rounded-lg ${
+                        msg.role === "user"
+                          ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-br-none"
+                          : "bg-muted text-foreground rounded-bl-none"
+                      }`}
+                    >
+                      <p className="text-sm">{msg.content}</p>
+                    </div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-muted text-foreground px-4 py-3 rounded-lg rounded-bl-none">
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" />
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce delay-100" />
+                        <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce delay-200" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Input Area */}
+        <div className="border-t border-border bg-card">
+          <div className="max-w-3xl mx-auto px-4 py-4">
+            <form onSubmit={handleSendMessage} className="flex gap-3">
+              <Input
+                type="text"
+                placeholder="Send a message..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading}
+                className="flex-1 h-11 border-border focus:border-primary focus:ring-primary bg-input text-foreground placeholder:text-muted-foreground"
+              />
+              <Button
+                type="submit"
+                disabled={isLoading || !inputValue.trim()}
+                className="h-11 px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground rounded-lg transition-all disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
