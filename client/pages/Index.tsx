@@ -34,8 +34,36 @@ export default function Login() {
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      console.log("Login attempt:", { email, password });
+      const response = await fetch(
+        "http://localhost:5678/webhook/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data?.message || "Invalid email or password");
+        return;
+      }
+      // -- STORE TOKEN (data.token assumed) --
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      } else {
+        setError("Token not returned from API");
+        return;
+      }
+      navigate("/Chat");
+    } catch (err) {
+      setError("Something went wrong, please try again.");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

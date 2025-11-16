@@ -45,59 +45,79 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // Validation
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !formData.confirmPassword ||
-      !formData.age ||
-      !formData.gender
-    ) {
-      setError("Please fill in all fields");
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setError("Please enter a valid email");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    const ageNum = parseInt(formData.age);
-    if (isNaN(ageNum) || ageNum < 13) {
-      setError("You must be at least 13 years old");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      // Call dummy signup API
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.status === 200) {
-        // Navigate to chat page on success
-        navigate("/chat");
-      } else {
-        setError("Signup failed. Please try again.");
+      // Basic validation
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.password ||
+        !formData.confirmPassword ||
+        !formData.age ||
+        !formData.gender
+      ) {
+        setError("Please fill in all fields");
+        return;
       }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        setError("Please enter a valid email");
+        return;
+      }
+
+      if (formData.password.length < 8) {
+        setError("Password must be at least 8 characters");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+
+      const ageNum = parseInt(formData.age);
+      if (isNaN(ageNum) || ageNum < 13) {
+        setError("You must be at least 13 years old");
+        return;
+      }
+
+      // Prepare payload
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        createPassword: formData.password,
+        confirmPassword: formData.confirmPassword,
+        age: ageNum,
+        gender: formData.gender,
+      };
+
+      const response = await fetch(
+        "http://localhost:5678/webhook/sign-up-user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const data = await response.json();
+        if (!response.ok) {
+        // Show message returned by API if available
+        setError(data?.message || "Signup failed. Please try again.");
+        return;
+      }
+
+      // Store token if returned
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      } else {
+        setError("Token not returned from API");
+        return;
+      }
+
+      navigate("/Chat");
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error("Signup error:", err);
@@ -105,6 +125,70 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setError("");
+
+  //   // Validation
+  //   if (
+  //     !formData.name ||
+  //     !formData.email ||
+  //     !formData.password ||
+  //     !formData.confirmPassword ||
+  //     !formData.age ||
+  //     !formData.gender
+  //   ) {
+  //     setError("Please fill in all fields");
+  //     return;
+  //   }
+
+  //   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+  //     setError("Please enter a valid email");
+  //     return;
+  //   }
+
+  //   if (formData.password.length < 8) {
+  //     setError("Password must be at least 8 characters");
+  //     return;
+  //   }
+
+  //   if (formData.password !== formData.confirmPassword) {
+  //     setError("Passwords do not match");
+  //     return;
+  //   }
+
+  //   const ageNum = parseInt(formData.age);
+  //   if (isNaN(ageNum) || ageNum < 13) {
+  //     setError("You must be at least 13 years old");
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+
+  //   try {
+  //     // Call dummy signup API
+  //     const response = await fetch("http://localhost:5678/webhook/sign-up-user", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+
+  //     if (response.status === 200) {
+  //       // Navigate to chat page on success
+  //       navigate("/chat");
+  //     } else {
+  //       setError("Signup failed. Please try again.");
+  //     }
+  //   } catch (err) {
+  //     setError("An error occurred. Please try again.");
+  //     console.error("Signup error:", err);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
