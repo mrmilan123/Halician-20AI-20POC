@@ -60,7 +60,7 @@ export default function Home() {
       const data = await response.json();
       setUserDetails({
         id: data.id,
-        userName: data.name,
+        userName: data.userName,
         age: data.age,
         gender: data.gender,
         email: data.email,
