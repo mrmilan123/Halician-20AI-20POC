@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,33 +11,50 @@ import {
   X,
 } from "lucide-react";
 
-interface Message {
-  id: string;
+interface ChatMessage {
   role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
+  content: string | { url: string };
+  time: string;
+  contentType: "text" | "image" | "video";
 }
 
 interface Conversation {
   id: string;
   title: string;
-  messages: Message[];
+  messages: ChatMessage[];
 }
 
 export default function Chat() {
   const navigate = useNavigate();
-  const [conversations, setConversations] = useState<Conversation[]>([
-    {
-      id: "1",
-      title: "New Conversation",
-      messages: [],
-    },
-  ]);
-  const [currentConversationId, setCurrentConversationId] = useState("1");
+  const location = useLocation();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Get case data from navigation state
+  const caseId = (location.state as any)?.caseId;
+  const initialChatData = (location.state as any)?.chatData || [];
+
+  useEffect(() => {
+    if (!caseId) {
+      navigate("/home");
+      return;
+    }
+
+    // Initialize with case conversation
+    const convId = `case-${caseId}`;
+    const caseConversation: Conversation = {
+      id: convId,
+      title: `Case #${caseId}`,
+      messages: initialChatData,
+    };
+
+    setConversations([caseConversation]);
+    setCurrentConversationId(convId);
+  }, [caseId, initialChatData, navigate]);
 
   const currentConversation = conversations.find(
     (c) => c.id === currentConversationId
@@ -66,6 +83,10 @@ export default function Chat() {
     setCurrentConversationId(newId);
   };
 
+  const handleGoHome = () => {
+    navigate("/home");
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -73,11 +94,11 @@ export default function Chat() {
       return;
     }
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
+    const userMessage: ChatMessage = {
       role: "user",
       content: inputValue,
-      timestamp: new Date(),
+      time: new Date().toISOString(),
+      contentType: "text",
     };
 
     setConversations(
@@ -105,29 +126,25 @@ export default function Chat() {
         body: JSON.stringify({
           message: inputValue,
           conversationId: currentConversationId,
+          caseId,
         }),
       });
 
       const data = await response.json();
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      const assistantMessage: ChatMessage = {
         role: "assistant",
         content: data.response || "I couldn't process your message. Please try again.",
-        timestamp: new Date(),
+        time: new Date().toISOString(),
+        contentType: "text",
       };
 
       setConversations(
         conversations.map((conv) => {
           if (conv.id === currentConversationId) {
-            const updatedMessages = [...conv.messages, assistantMessage];
             return {
               ...conv,
-              messages: updatedMessages,
-              title:
-                conv.title === "New Conversation"
-                  ? inputValue.substring(0, 30)
-                  : conv.title,
+              messages: [...conv.messages, assistantMessage],
             };
           }
           return conv;
@@ -139,6 +156,61 @@ export default function Chat() {
       setIsLoading(false);
     }
   };
+
+  const renderMessageContent = (message: ChatMessage) => {
+    if (message.contentType === "text") {
+      return (
+        <p className="text-sm whitespace-pre-wrap break-words">
+          {message.content as string}
+        </p>
+      );
+    }
+
+    if (message.contentType === "image") {
+      const imageUrl = typeof message.content === "string" 
+        ? message.content 
+        : (message.content as any).url;
+      return (
+        <img
+          src={imageUrl}
+          alt="Shared content"
+          className="max-w-xs rounded-lg"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://via.placeholder.com/300?text=Image+Not+Found";
+          }}
+        />
+      );
+    }
+
+    if (message.contentType === "video") {
+      const videoUrl = typeof message.content === "string" 
+        ? message.content 
+        : (message.content as any).url;
+      return (
+        <video
+          src={videoUrl}
+          controls
+          className="max-w-xs rounded-lg"
+          onError={(e) => {
+            console.error("Video error:", e);
+          }}
+        />
+      );
+    }
+
+    return <p className="text-sm">{String(message.content)}</p>;
+  };
+
+  if (!currentConversation) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading conversation...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex bg-background">
@@ -152,7 +224,7 @@ export default function Chat() {
           {/* Sidebar Header */}
           <div className="flex items-center justify-between p-4 border-b border-border">
             <h1 className="text-lg font-bold font-display text-foreground">
-              Chat App
+              Cases
             </h1>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -195,7 +267,13 @@ export default function Chat() {
           </div>
 
           {/* Sidebar Footer */}
-          <div className="border-t border-border p-4">
+          <div className="border-t border-border p-4 space-y-2">
+            <button
+              onClick={handleGoHome}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-secondary/10 hover:bg-secondary/20 text-secondary transition-colors font-medium text-sm"
+            >
+              ← Back to Cases
+            </button>
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors font-medium text-sm"
@@ -222,13 +300,21 @@ export default function Chat() {
               {currentConversation?.title || "Chat"}
             </h2>
           </div>
-          <button
-            onClick={handleLogout}
-            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors text-sm font-medium"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleGoHome}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary/10 hover:bg-secondary/20 text-secondary transition-colors text-sm font-medium"
+            >
+              ← Back
+            </button>
+            <button
+              onClick={handleLogout}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors text-sm font-medium"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Messages Area */}
@@ -240,17 +326,17 @@ export default function Chat() {
                   <MessageSquare className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold font-display text-foreground mb-2">
-                  Start a new conversation
+                  Start your conversation
                 </h3>
                 <p className="text-muted-foreground max-w-sm">
-                  Ask me anything. I'm here to help with questions, creative writing, coding, and much more.
+                  Type a message to begin discussing this case with the assistant.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
-                {currentConversation?.messages.map((msg) => (
+                {currentConversation?.messages.map((msg, index) => (
                   <div
-                    key={msg.id}
+                    key={index}
                     className={`flex ${
                       msg.role === "user" ? "justify-end" : "justify-start"
                     }`}
@@ -262,7 +348,13 @@ export default function Chat() {
                           : "bg-muted text-foreground rounded-bl-none"
                       }`}
                     >
-                      <p className="text-sm">{msg.content}</p>
+                      {renderMessageContent(msg)}
+                      <p className="text-xs mt-1 opacity-70">
+                        {new Date(msg.time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </div>
                   </div>
                 ))}
