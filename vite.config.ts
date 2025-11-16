@@ -32,8 +32,16 @@ function expressPlugin(): Plugin {
     configureServer(server) {
       const app = createServer();
 
-      // Add Express app as middleware to Vite dev server
+      // Add Express app as middleware BEFORE Vite's own middleware
+      // This allows Express to handle /api/* routes while letting Vite handle SPA routing
       server.middlewares.use(app);
+
+      // Return middleware that handles SPA fallback after Express
+      return () => {
+        server.middlewares.use((_req, _res, next) => {
+          next();
+        });
+      };
     },
   };
 }
