@@ -45,8 +45,14 @@ export default function Home() {
     try {
       setIsLoading(true);
       setError("");
+      const token = localStorage.getItem("token");
       const response = await fetch(
         "http://localhost:5678/webhook/user-details",
+        {
+          headers: {
+            "Authorization":`Bearer ${token}`
+          }
+        },
       );
 
       if (!response.ok) {
@@ -56,7 +62,7 @@ export default function Home() {
       const data = await response.json();
       setUserDetails({
         id: data.id,
-        userName: data.userName,
+        userName: data.name,
         age: data.age,
         gender: data.gender,
         email: data.email,
