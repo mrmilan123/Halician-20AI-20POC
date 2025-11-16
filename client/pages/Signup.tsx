@@ -100,10 +100,10 @@ export default function Signup() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
       const data = await response.json();
-        if (!response.ok) {
+      if (!response.ok) {
         // Show message returned by API if available
         setError(data?.message || "Signup failed. Please try again.");
         return;
@@ -372,7 +372,10 @@ export default function Signup() {
                 >
                   Gender
                 </Label>
-                <Select value={formData.gender} onValueChange={handleGenderChange}>
+                <Select
+                  value={formData.gender}
+                  onValueChange={handleGenderChange}
+                >
                   <SelectTrigger className="h-11 border-border focus:border-primary focus:ring-primary bg-input text-foreground">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>

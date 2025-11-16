@@ -34,19 +34,16 @@ export default function Login() {
         return;
       }
 
-      const response = await fetch(
-        "http://localhost:5678/webhook/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:5678/webhook/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
       const data = await response.json();
 
       if (!response.ok) {

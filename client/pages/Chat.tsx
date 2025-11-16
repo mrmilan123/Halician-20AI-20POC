@@ -2,14 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  LogOut,
-  Send,
-  Plus,
-  MessageSquare,
-  Menu,
-  X,
-} from "lucide-react";
+import { LogOut, Send, Plus, MessageSquare, Menu, X } from "lucide-react";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -57,7 +50,7 @@ export default function Chat() {
   }, [caseId, initialChatData, navigate]);
 
   const currentConversation = conversations.find(
-    (c) => c.id === currentConversationId
+    (c) => c.id === currentConversationId,
   );
 
   const scrollToBottom = () => {
@@ -110,7 +103,7 @@ export default function Chat() {
           };
         }
         return conv;
-      })
+      }),
     );
 
     setInputValue("");
@@ -134,7 +127,8 @@ export default function Chat() {
 
       const assistantMessage: ChatMessage = {
         role: "assistant",
-        content: data.response || "I couldn't process your message. Please try again.",
+        content:
+          data.response || "I couldn't process your message. Please try again.",
         time: new Date().toISOString(),
         contentType: "text",
       };
@@ -148,7 +142,7 @@ export default function Chat() {
             };
           }
           return conv;
-        })
+        }),
       );
     } catch (error) {
       console.error("Error sending message:", error);
@@ -167,25 +161,28 @@ export default function Chat() {
     }
 
     if (message.contentType === "image") {
-      const imageUrl = typeof message.content === "string" 
-        ? message.content 
-        : (message.content as any).url;
+      const imageUrl =
+        typeof message.content === "string"
+          ? message.content
+          : (message.content as any).url;
       return (
         <img
           src={imageUrl}
           alt="Shared content"
           className="max-w-xs rounded-lg"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = "https://via.placeholder.com/300?text=Image+Not+Found";
+            (e.target as HTMLImageElement).src =
+              "https://via.placeholder.com/300?text=Image+Not+Found";
           }}
         />
       );
     }
 
     if (message.contentType === "video") {
-      const videoUrl = typeof message.content === "string" 
-        ? message.content 
-        : (message.content as any).url;
+      const videoUrl =
+        typeof message.content === "string"
+          ? message.content
+          : (message.content as any).url;
       return (
         <video
           src={videoUrl}
@@ -320,7 +317,8 @@ export default function Chat() {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-4 py-8">
-            {currentConversation?.messages && currentConversation.messages.length === 0 ? (
+            {currentConversation?.messages &&
+            currentConversation.messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
                   <MessageSquare className="w-8 h-8 text-primary" />
@@ -329,7 +327,8 @@ export default function Chat() {
                   Start your conversation
                 </h3>
                 <p className="text-muted-foreground max-w-sm">
-                  Type a message to begin discussing this case with the assistant.
+                  Type a message to begin discussing this case with the
+                  assistant.
                 </p>
               </div>
             ) : (

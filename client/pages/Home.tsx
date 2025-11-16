@@ -45,8 +45,10 @@ export default function Home() {
     try {
       setIsLoading(true);
       setError("");
-      const response = await fetch("http://localhost:5678/webhook/user-details");
-      
+      const response = await fetch(
+        "http://localhost:5678/webhook/user-details",
+      );
+
       if (!response.ok) {
         throw new Error("Failed to fetch user details");
       }
@@ -79,7 +81,7 @@ export default function Home() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ caseId }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -279,7 +281,7 @@ export default function Home() {
                     </h3>
                     <span
                       className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${getCaseTypeColor(
-                        caseItem.type
+                        caseItem.type,
                       )}`}
                     >
                       {caseItem.type}
@@ -295,7 +297,9 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Last updated</span>
+                      <span className="text-muted-foreground">
+                        Last updated
+                      </span>
                       <span className="text-foreground font-medium">
                         {formatDate(caseItem.lastModifiedOn)}
                       </span>

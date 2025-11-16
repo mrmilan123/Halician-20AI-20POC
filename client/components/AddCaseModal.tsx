@@ -57,23 +57,26 @@ export default function AddCaseModal({
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5678/webhook/create-case", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:5678/webhook/create-case",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: caseName,
+            type: caseType,
+          }),
         },
-        body: JSON.stringify({
-          name: caseName,
-          type: caseType,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to create case");
       }
 
       const data = await response.json();
-      
+
       // Call onSuccess with the new case data
       onSuccess({
         caseId: data.caseId,
@@ -146,7 +149,11 @@ export default function AddCaseModal({
             <Label htmlFor="case-type" className="text-sm font-medium">
               Case Type
             </Label>
-            <Select value={caseType} onValueChange={setCaseType} disabled={isLoading}>
+            <Select
+              value={caseType}
+              onValueChange={setCaseType}
+              disabled={isLoading}
+            >
               <SelectTrigger className="h-10 border-border focus:border-primary focus:ring-primary bg-input text-foreground">
                 <SelectValue placeholder="Select case type" />
               </SelectTrigger>
