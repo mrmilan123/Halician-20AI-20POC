@@ -77,15 +77,12 @@ export default function Home() {
   const handleCaseClick = async (caseId: number) => {
     try {
       setIsLoading(true);
-      const response = await fetch(
+      const response = await fetchWithAuth(
         "http://localhost:5678/webhook/load-case-conversation",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({ caseId }),
-        },
+        }
       );
 
       if (!response.ok) {

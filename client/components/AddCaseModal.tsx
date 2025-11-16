@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AlertCircle } from "lucide-react";
+import { useAuthenticatedFetch } from "@/hooks/useAuthenticatedFetch";
 
 interface AddCaseModalProps {
   isOpen: boolean;

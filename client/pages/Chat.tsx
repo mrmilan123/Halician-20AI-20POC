@@ -20,6 +20,8 @@ interface Conversation {
 export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
+  const fetchWithAuth = useAuthenticatedFetch();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -62,7 +64,7 @@ export default function Chat() {
   }, [currentConversation?.messages]);
 
   const handleLogout = () => {
-    navigate("/");
+    logout();
   };
 
   const handleNewConversation = () => {
@@ -111,11 +113,8 @@ export default function Chat() {
 
     try {
       // Call dummy chat API
-      const response = await fetch("/api/chat", {
+      const response = await fetchWithAuth("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           message: inputValue,
           conversationId: currentConversationId,
