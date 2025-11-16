@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LogIn, Mail, Lock, User, Calendar, Venus, Mars } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Signup() {
   const navigate = useNavigate();

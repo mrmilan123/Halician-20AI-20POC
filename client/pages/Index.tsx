@@ -54,12 +54,12 @@ export default function Login() {
       }
       // -- STORE TOKEN (data.token assumed) --
       if (data.token) {
-        localStorage.setItem("token", data.token);
+        login(data.token);
+        navigate("/home");
       } else {
         setError("Token not returned from API");
         return;
       }
-      navigate("/home");
     } catch (err) {
       setError("Something went wrong, please try again.");
       console.error(err);
