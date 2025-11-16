@@ -117,7 +117,7 @@ export default function Signup() {
         return;
       }
 
-      navigate("/Chat");
+      navigate("/home");
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error("Signup error:", err);
