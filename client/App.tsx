@@ -15,6 +15,47 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute requireAuth={false}>
+            <Index />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <ProtectedRoute requireAuth={false}>
+            <Signup />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute requireAuth={true}>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chat"
+        element={
+          <ProtectedRoute requireAuth={true}>
+            <Chat />
+          </ProtectedRoute>
+        }
+      />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
 export const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -22,42 +63,7 @@ export const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute requireAuth={false}>
-                  <Index />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <ProtectedRoute requireAuth={false}>
-                  <Signup />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/home"
-              element={
-                <ProtectedRoute requireAuth={true}>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/chat"
-              element={
-                <ProtectedRoute requireAuth={true}>
-                  <Chat />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppRoutes />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
