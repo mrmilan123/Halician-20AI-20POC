@@ -12,6 +12,8 @@ import {
   Loader,
 } from "lucide-react";
 import AddCaseModal from "@/components/AddCaseModal";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthenticatedFetch } from "@/hooks/useAuthenticatedFetch";
 
 interface UserDetails {
   id: number;
@@ -31,6 +33,8 @@ interface Case {
 
 export default function Home() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const fetchWithAuth = useAuthenticatedFetch();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,14 +49,8 @@ export default function Home() {
     try {
       setIsLoading(true);
       setError("");
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        "http://localhost:5678/webhook/user-details",
-        {
-          headers: {
-            "Authorization":`Bearer ${token}`
-          }
-        },
+      const response = await fetchWithAuth(
+        "http://localhost:5678/webhook/user-details"
       );
 
       if (!response.ok) {
@@ -113,7 +111,7 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    navigate("/");
+    logout();
   };
 
   const formatDate = (dateString: string) => {
