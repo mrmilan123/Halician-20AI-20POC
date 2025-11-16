@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -112,13 +113,12 @@ export default function Signup() {
 
       // Store token if returned
       if (data.token) {
-        localStorage.setItem("token", data.token);
+        login(data.token);
+        navigate("/home");
       } else {
         setError("Token not returned from API");
         return;
       }
-
-      navigate("/home");
     } catch (err) {
       setError("An error occurred. Please try again.");
       console.error("Signup error:", err);
