@@ -60,7 +60,7 @@ export default function Login() {
         setError("Token not returned from API");
         return;
       }
-      navigate("/Chat");
+      navigate("/home");
     } catch (err) {
       setError("Something went wrong, please try again.");
       console.error(err);
