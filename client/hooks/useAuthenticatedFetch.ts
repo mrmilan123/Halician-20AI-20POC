@@ -11,7 +11,7 @@ export function useAuthenticatedFetch() {
 
   const fetchWithAuth = async (
     url: string,
-    options: FetchOptions = {}
+    options: FetchOptions = {},
   ): Promise<Response> => {
     const headers: Record<string, string> = {
       ...options.headers,
