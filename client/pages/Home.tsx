@@ -50,7 +50,7 @@ export default function Home() {
       setIsLoading(true);
       setError("");
       const response = await fetchWithAuth(
-        "http://localhost:5678/webhook/user-details",
+        "/webhook/user-details",
       );
 
       if (!response.ok) {
