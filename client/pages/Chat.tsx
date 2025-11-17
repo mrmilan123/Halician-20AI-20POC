@@ -169,7 +169,7 @@ export default function Chat() {
     try {
       // Call ai-resp API endpoint
       const response = await fetchWithAuth(
-        "http://localhost:5678/webhook/ai-resp",
+        "/webhook/ai-resp",
         {
           method: "POST",
           body: JSON.stringify({
