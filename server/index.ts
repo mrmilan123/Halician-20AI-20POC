@@ -30,7 +30,12 @@ export function createServer() {
 
   // SPA Fallback: Serve index.html for any non-API, non-static routes
   // This allows client-side routing to work on hard refresh
-  app.get("*", (_req, res) => {
+  app.use((req, res, next) => {
+    // Skip API routes and let them be handled by Express
+    if (req.path.startsWith("/api/")) {
+      return next();
+    }
+
     // In development, Vite will serve index.html
     // In production, serve from dist/spa
     const indexPath = path.join(__dirname, "../dist/spa/index.html");
