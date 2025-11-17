@@ -95,7 +95,7 @@ export default function Signup() {
       };
 
       const response = await fetch(
-        "http://localhost:5678/webhook/sign-up-user",
+        "/webhook/sign-up-user",
         {
           method: "POST",
           headers: {
