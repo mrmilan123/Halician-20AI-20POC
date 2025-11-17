@@ -1,5 +1,96 @@
 import { RequestHandler } from "express";
 
+export const handleUserDetails: RequestHandler = (req, res) => {
+  // Simulate fetching user details from a database
+  const userDetails = {
+    id: 1,
+    name: "John Smith",
+    age: 35,
+    gender: "Male",
+    email: "john.smith@example.com",
+    cases: [
+      {
+        caseId: 1,
+        name: "Smith vs. Company Ltd.",
+        type: "Consumer complaint",
+        createdOn: "2024-01-15T10:30:00Z",
+        lastModifiedOn: "2024-01-20T14:45:00Z",
+      },
+      {
+        caseId: 2,
+        name: "Property Boundary Dispute",
+        type: "Property dispute",
+        createdOn: "2024-02-01T09:15:00Z",
+        lastModifiedOn: "2024-02-05T11:20:00Z",
+      },
+    ],
+  };
+
+  res.status(200).json(userDetails);
+};
+
+export const handleCreateCase: RequestHandler = (req, res) => {
+  const { name, type } = req.body;
+
+  // Simulate creating a new case
+  const newCase = {
+    caseId: Math.floor(Math.random() * 10000) + 100,
+    name: name,
+    type: type,
+    createdOn: new Date().toISOString(),
+    lastModifiedOn: new Date().toISOString(),
+  };
+
+  res.status(200).json(newCase);
+};
+
+export const handleLoadCaseConversation: RequestHandler = (req, res) => {
+  const { caseId } = req.body;
+
+  // Simulate loading case conversation history
+  const mockConversations: { [key: number]: any[] } = {
+    1: [
+      {
+        role: "assistant",
+        content:
+          "I'm ready to assist you with your consumer complaint case. What are the details?",
+        time: new Date(Date.now() - 86400000).toISOString(),
+        contentType: "text",
+      },
+      {
+        role: "user",
+        content:
+          "The product I purchased was defective and the seller won't provide a refund.",
+        time: new Date(Date.now() - 86400000 + 60000).toISOString(),
+        contentType: "text",
+      },
+      {
+        role: "assistant",
+        content:
+          "I understand your frustration. Have you documented the defect with photos or videos? Do you have the original receipt and warranty information?",
+        time: new Date(Date.now() - 86400000 + 120000).toISOString(),
+        contentType: "text",
+      },
+    ],
+    2: [
+      {
+        role: "assistant",
+        content:
+          "Welcome to your property dispute case. I'm here to help you resolve this boundary issue. Please provide details about the dispute.",
+        time: new Date(Date.now() - 172800000).toISOString(),
+        contentType: "text",
+      },
+    ],
+  };
+
+  const chat = mockConversations[caseId as number] || [];
+
+  res.status(200).json({
+    caseId: caseId,
+    chat: chat,
+  });
+};
+
 export const handleInitiateChat: RequestHandler = (req, res) => {
   const { caseName, caseType } = req.body;
 
