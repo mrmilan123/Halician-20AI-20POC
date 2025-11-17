@@ -57,7 +57,7 @@ export default function Chat() {
                 caseName: caseName || `Case #${caseId}`,
                 caseType: caseType || "",
               }),
-            }
+            },
           );
 
           if (response.ok) {
@@ -67,7 +67,10 @@ export default function Chat() {
                 role: "assistant" as const,
                 content: chatInitData.content.message,
                 time: new Date().toISOString(),
-                contentType: (chatInitData.type || "text") as "text" | "image" | "video",
+                contentType: (chatInitData.type || "text") as
+                  | "text"
+                  | "image"
+                  | "video",
               },
             ];
           }
@@ -174,7 +177,7 @@ export default function Chat() {
             },
             type: "text",
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -185,7 +188,9 @@ export default function Chat() {
 
       const assistantMessage: ChatMessage = {
         role: "assistant",
-        content: data.content.message || "I couldn't process your message. Please try again.",
+        content:
+          data.content.message ||
+          "I couldn't process your message. Please try again.",
         time: new Date().toISOString(),
         contentType: (data.type || "text") as "text" | "image" | "video",
       };
@@ -235,9 +240,7 @@ export default function Chat() {
           ? message.content
           : (message.content as any)?.message || "";
       return (
-        <p className="text-sm whitespace-pre-wrap break-words">
-          {textContent}
-        </p>
+        <p className="text-sm whitespace-pre-wrap break-words">{textContent}</p>
       );
     }
 

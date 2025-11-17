@@ -117,7 +117,7 @@ export default function Home() {
             caseName: newCase.name,
             caseType: newCase.type,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -131,7 +131,10 @@ export default function Home() {
         role: "assistant" as const,
         content: chatInitData.content.message,
         time: new Date().toISOString(),
-        contentType: (chatInitData.type || "text") as "text" | "image" | "video",
+        contentType: (chatInitData.type || "text") as
+          | "text"
+          | "image"
+          | "video",
       };
 
       // Navigate to chat-screen with case data and initial message
@@ -141,7 +144,7 @@ export default function Home() {
           chatData: [initialMessage],
           caseName: newCase.name,
           caseType: newCase.type,
-        }
+        },
       });
     } catch (err) {
       setError("Failed to create case and initiate chat. Please try again.");

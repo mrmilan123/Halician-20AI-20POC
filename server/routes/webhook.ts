@@ -122,7 +122,8 @@ export const handleAiResponse: RequestHandler = (req, res) => {
   // Generate a simple AI response based on user input
   const lowerMessage = userMessage.toLowerCase();
 
-  let aiResponse = "I'm processing your request. Could you provide more details?";
+  let aiResponse =
+    "I'm processing your request. Could you provide more details?";
 
   if (lowerMessage.includes("timeline") || lowerMessage.includes("deadline")) {
     aiResponse =
