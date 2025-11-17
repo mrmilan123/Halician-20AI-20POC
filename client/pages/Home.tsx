@@ -114,6 +114,7 @@ export default function Home() {
         {
           method: "POST",
           body: JSON.stringify({
+            caseId: newCase.caseId,
             caseName: newCase.name,
             caseType: newCase.type,
           }),
