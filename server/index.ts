@@ -29,6 +29,10 @@ export function createServer() {
   // Chat routes
   app.post("/api/chat", handleChat);
 
+  // Webhook routes
+  app.post("/webhook/initiate-chat", handleInitiateChat);
+  app.post("/webhook/ai-resp", handleAiResponse);
+
   // SPA Fallback: Only in production mode
   // In development, Vite's dev server handles SPA routing
   if (process.env.NODE_ENV === "production") {
