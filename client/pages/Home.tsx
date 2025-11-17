@@ -78,7 +78,7 @@ export default function Home() {
     try {
       setIsLoading(true);
       const response = await fetchWithAuth(
-        "http://localhost:5678/webhook/load-case-conversation",
+        "/webhook/load-case-conversation",
         {
           method: "POST",
           body: JSON.stringify({ caseId }),
