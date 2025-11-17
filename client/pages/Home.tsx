@@ -110,7 +110,7 @@ export default function Home() {
 
       // Call initiate-chat API
       const response = await fetchWithAuth(
-        "http://localhost:5678/webhook/initiate-chat",
+        "/webhook/initiate-chat",
         {
           method: "POST",
           body: JSON.stringify({
