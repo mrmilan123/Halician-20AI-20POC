@@ -1,5 +1,74 @@
 import { RequestHandler } from "express";
 
+export const handleLogin: RequestHandler = (req, res) => {
+  const { email, password } = req.body;
+
+  // Simple validation
+  if (!email || !password) {
+    res.status(400).json({ error: "Email and password are required" });
+    return;
+  }
+
+  // Simulate a dummy login (in real app, check credentials against database)
+  if (email && password.length >= 6) {
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token: "dummy-jwt-token-" + Math.random().toString(36).substr(2, 9),
+      user: {
+        id: 1,
+        name: "John Smith",
+        email: email,
+        age: 35,
+        gender: "Male",
+      },
+    });
+  } else {
+    res.status(401).json({ error: "Invalid credentials" });
+  }
+};
+
+export const handleSignUpUser: RequestHandler = (req, res) => {
+  const { name, email, password, confirmPassword, age, gender } = req.body;
+
+  // Validation
+  if (!name || !email || !password || !confirmPassword || !age || !gender) {
+    res.status(400).json({ error: "Missing required fields" });
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    res.status(400).json({ error: "Passwords do not match" });
+    return;
+  }
+
+  if (password.length < 8) {
+    res.status(400).json({ error: "Password must be at least 8 characters" });
+    return;
+  }
+
+  const ageNum = parseInt(age);
+  if (isNaN(ageNum) || ageNum < 13) {
+    res.status(400).json({ error: "You must be at least 13 years old" });
+    return;
+  }
+
+  // Simulate signup success
+  res.status(200).json({
+    success: true,
+    message: "Account created successfully",
+    token: "dummy-jwt-token-" + Math.random().toString(36).substr(2, 9),
+    user: {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      email,
+      age: ageNum,
+      gender,
+      createdAt: new Date().toISOString(),
+    },
+  });
+};
+
 export const handleUserDetails: RequestHandler = (req, res) => {
   // Simulate fetching user details from a database
   const userDetails = {
