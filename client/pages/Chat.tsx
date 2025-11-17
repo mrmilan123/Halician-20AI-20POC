@@ -34,6 +34,8 @@ export default function Chat() {
   // Get case data from navigation state
   const caseId = (location.state as any)?.caseId;
   const initialChatData = (location.state as any)?.chatData || [];
+  const caseName = (location.state as any)?.caseName;
+  const caseType = (location.state as any)?.caseType;
 
   useEffect(() => {
     if (!caseId) {
@@ -41,17 +43,62 @@ export default function Chat() {
       return;
     }
 
-    // Initialize with case conversation
-    const convId = `case-${caseId}`;
-    const caseConversation: Conversation = {
-      id: convId,
-      title: `Case #${caseId}`,
-      messages: initialChatData,
+    const initializeChat = async () => {
+      try {
+        let messages = initialChatData;
+
+        // If no initial chat data, call initiate-chat
+        if (!messages || messages.length === 0) {
+          const response = await fetchWithAuth(
+            "http://localhost:5678/webhook/initiate-chat",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                caseName: caseName || `Case #${caseId}`,
+                caseType: caseType || "",
+              }),
+            }
+          );
+
+          if (response.ok) {
+            const chatInitData = await response.json();
+            messages = [
+              {
+                role: "assistant" as const,
+                content: chatInitData.content.message,
+                time: new Date().toISOString(),
+                contentType: (chatInitData.type || "text") as "text" | "image" | "video",
+              },
+            ];
+          }
+        }
+
+        // Initialize with case conversation
+        const convId = `case-${caseId}`;
+        const caseConversation: Conversation = {
+          id: convId,
+          title: caseName || `Case #${caseId}`,
+          messages: messages,
+        };
+
+        setConversations([caseConversation]);
+        setCurrentConversationId(convId);
+      } catch (err) {
+        console.error("Error initializing chat:", err);
+        // Fallback: Initialize with empty messages
+        const convId = `case-${caseId}`;
+        const caseConversation: Conversation = {
+          id: convId,
+          title: caseName || `Case #${caseId}`,
+          messages: initialChatData,
+        };
+        setConversations([caseConversation]);
+        setCurrentConversationId(convId);
+      }
     };
 
-    setConversations([caseConversation]);
-    setCurrentConversationId(convId);
-  }, [caseId, initialChatData, navigate]);
+    initializeChat();
+  }, [caseId, caseName, caseType, initialChatData, navigate, fetchWithAuth]);
 
   const currentConversation = conversations.find(
     (c) => c.id === currentConversationId,
