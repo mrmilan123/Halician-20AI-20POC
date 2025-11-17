@@ -116,7 +116,7 @@ export const handleInitiateChat: RequestHandler = (req, res) => {
 };
 
 export const handleAiResponse: RequestHandler = (req, res) => {
-  const { content } = req.body;
+  const { caseId, content } = req.body;
   const userMessage = content?.message || "";
 
   // Generate a simple AI response based on user input
