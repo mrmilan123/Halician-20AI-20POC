@@ -36,7 +36,7 @@ export default function Login() {
         return;
       }
 
-      const response = await fetch("http://localhost:5678/webhook/login", {
+      const response = await fetch("/webhook/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
