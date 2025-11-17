@@ -174,6 +174,8 @@ export default function Chat() {
           method: "POST",
           body: JSON.stringify({
             caseId: caseId,
+            caseName: caseName || `Case #${caseId}`,
+            caseType: caseType || "",
             content: {
               message: messageContent,
             },
