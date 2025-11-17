@@ -8,7 +8,7 @@ import { useAuthenticatedFetch } from "@/hooks/useAuthenticatedFetch";
 
 interface ChatMessage {
   role: "user" | "assistant";
-  content: string | { url: string };
+  content: string | { url?: string; message?: string };
   time: string;
   contentType: "text" | "image" | "video";
 }
