@@ -92,7 +92,7 @@ export const handleLoadCaseConversation: RequestHandler = (req, res) => {
 };
 
 export const handleInitiateChat: RequestHandler = (req, res) => {
-  const { caseName, caseType } = req.body;
+  const { caseId, caseName, caseType } = req.body;
 
   // Generate a simple AI response based on the case
   const responses: { [key: string]: string } = {
