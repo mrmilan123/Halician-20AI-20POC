@@ -60,7 +60,7 @@ export default function AddCaseModal({
 
     try {
       const response = await fetchWithAuth(
-        "http://localhost:5678/webhook/create-case",
+        "/webhook/create-case",
         {
           method: "POST",
           body: JSON.stringify({
