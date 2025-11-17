@@ -230,9 +230,13 @@ export default function Chat() {
 
   const renderMessageContent = (message: ChatMessage) => {
     if (message.contentType === "text") {
+      const textContent =
+        typeof message.content === "string"
+          ? message.content
+          : (message.content as any)?.message || "";
       return (
         <p className="text-sm whitespace-pre-wrap break-words">
-          {message.content as string}
+          {textContent}
         </p>
       );
     }
@@ -241,7 +245,7 @@ export default function Chat() {
       const imageUrl =
         typeof message.content === "string"
           ? message.content
-          : (message.content as any).url;
+          : (message.content as any)?.url;
       return (
         <img
           src={imageUrl}
@@ -259,7 +263,7 @@ export default function Chat() {
       const videoUrl =
         typeof message.content === "string"
           ? message.content
-          : (message.content as any).url;
+          : (message.content as any)?.url;
       return (
         <video
           src={videoUrl}
