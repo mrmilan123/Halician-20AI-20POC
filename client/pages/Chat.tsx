@@ -49,17 +49,14 @@ export default function Chat() {
 
         // If no initial chat data, call initiate-chat
         if (!messages || messages.length === 0) {
-          const response = await fetchWithAuth(
-            "/webhook/initiate-chat",
-            {
-              method: "POST",
-              body: JSON.stringify({
-                caseId: caseId,
-                caseName: caseName || `Case #${caseId}`,
-                caseType: caseType || "",
-              }),
-            },
-          );
+          const response = await fetchWithAuth("/webhook/initiate-chat", {
+            method: "POST",
+            body: JSON.stringify({
+              caseId: caseId,
+              caseName: caseName || `Case #${caseId}`,
+              caseType: caseType || "",
+            }),
+          });
 
           if (response.ok) {
             const chatInitData = await response.json();
@@ -168,21 +165,18 @@ export default function Chat() {
 
     try {
       // Call ai-resp API endpoint
-      const response = await fetchWithAuth(
-        "/webhook/ai-resp",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            caseId: caseId,
-            caseName: caseName || `Case #${caseId}`,
-            caseType: caseType || "",
-            content: {
-              message: messageContent,
-            },
-            type: "text",
-          }),
-        },
-      );
+      const response = await fetchWithAuth("/webhook/ai-resp", {
+        method: "POST",
+        body: JSON.stringify({
+          caseId: caseId,
+          caseName: caseName || `Case #${caseId}`,
+          caseType: caseType || "",
+          content: {
+            message: messageContent,
+          },
+          type: "text",
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to get AI response");

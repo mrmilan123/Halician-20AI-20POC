@@ -49,9 +49,7 @@ export default function Home() {
     try {
       setIsLoading(true);
       setError("");
-      const response = await fetchWithAuth(
-        "/webhook/user-details",
-      );
+      const response = await fetchWithAuth("/webhook/user-details");
 
       if (!response.ok) {
         throw new Error("Failed to fetch user details");
@@ -77,13 +75,10 @@ export default function Home() {
   const handleCaseClick = async (caseId: number) => {
     try {
       setIsLoading(true);
-      const response = await fetchWithAuth(
-        "/webhook/load-case-conversation",
-        {
-          method: "POST",
-          body: JSON.stringify({ caseId }),
-        },
-      );
+      const response = await fetchWithAuth("/webhook/load-case-conversation", {
+        method: "POST",
+        body: JSON.stringify({ caseId }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to load case conversation");
@@ -109,17 +104,14 @@ export default function Home() {
       setError("");
 
       // Call initiate-chat API
-      const response = await fetchWithAuth(
-        "/webhook/initiate-chat",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            caseId: newCase.caseId,
-            caseName: newCase.name,
-            caseType: newCase.type,
-          }),
-        },
-      );
+      const response = await fetchWithAuth("/webhook/initiate-chat", {
+        method: "POST",
+        body: JSON.stringify({
+          caseId: newCase.caseId,
+          caseName: newCase.name,
+          caseType: newCase.type,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to initiate chat");

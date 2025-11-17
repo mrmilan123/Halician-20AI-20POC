@@ -94,16 +94,13 @@ export default function Signup() {
         gender: formData.gender,
       };
 
-      const response = await fetch(
-        "/webhook/sign-up-user",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+      const response = await fetch("/webhook/sign-up-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(payload),
+      });
       const data = await response.json();
       if (!response.ok) {
         // Show message returned by API if available

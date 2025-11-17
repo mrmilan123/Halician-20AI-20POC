@@ -59,16 +59,13 @@ export default function AddCaseModal({
     setIsLoading(true);
 
     try {
-      const response = await fetchWithAuth(
-        "/webhook/create-case",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name: caseName,
-            type: caseType,
-          }),
-        },
-      );
+      const response = await fetchWithAuth("/webhook/create-case", {
+        method: "POST",
+        body: JSON.stringify({
+          name: caseName,
+          type: caseType,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to create case");
