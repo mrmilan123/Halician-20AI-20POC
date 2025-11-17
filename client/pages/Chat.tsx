@@ -173,6 +173,7 @@ export default function Chat() {
         {
           method: "POST",
           body: JSON.stringify({
+            caseId: caseId,
             content: {
               message: messageContent,
             },
