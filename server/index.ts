@@ -38,6 +38,8 @@ export function createServer() {
   app.post("/api/chat", handleChat);
 
   // Webhook routes
+  app.post("/webhook/login", handleLogin);
+  app.post("/webhook/sign-up-user", handleSignUpUser);
   app.get("/webhook/user-details", handleUserDetails);
   app.post("/webhook/create-case", handleCreateCase);
   app.post("/webhook/load-case-conversation", handleLoadCaseConversation);
