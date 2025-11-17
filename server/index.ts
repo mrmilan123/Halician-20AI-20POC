@@ -6,6 +6,8 @@ import { handleDemo } from "./routes/demo";
 import { handleSignup } from "./routes/signup";
 import { handleChat } from "./routes/chat";
 import {
+  handleLogin,
+  handleSignUpUser,
   handleUserDetails,
   handleCreateCase,
   handleLoadCaseConversation,
