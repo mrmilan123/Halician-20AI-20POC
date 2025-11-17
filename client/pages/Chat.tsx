@@ -138,9 +138,11 @@ export default function Chat() {
       return;
     }
 
+    const messageContent = inputValue;
+
     const userMessage: ChatMessage = {
       role: "user",
-      content: inputValue,
+      content: messageContent,
       time: new Date().toISOString(),
       contentType: "text",
     };
@@ -161,24 +163,31 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      // Call dummy chat API
-      const response = await fetchWithAuth("/api/chat", {
-        method: "POST",
-        body: JSON.stringify({
-          message: inputValue,
-          conversationId: currentConversationId,
-          caseId,
-        }),
-      });
+      // Call ai-resp API endpoint
+      const response = await fetchWithAuth(
+        "http://localhost:5678/webhook/ai-resp",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            content: {
+              message: messageContent,
+            },
+            type: "text",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to get AI response");
+      }
 
       const data = await response.json();
 
       const assistantMessage: ChatMessage = {
         role: "assistant",
-        content:
-          data.response || "I couldn't process your message. Please try again.",
+        content: data.content.message || "I couldn't process your message. Please try again.",
         time: new Date().toISOString(),
-        contentType: "text",
+        contentType: (data.type || "text") as "text" | "image" | "video",
       };
 
       setConversations(
@@ -194,6 +203,26 @@ export default function Chat() {
       );
     } catch (error) {
       console.error("Error sending message:", error);
+
+      // Add error message to conversation
+      const errorMessage: ChatMessage = {
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again.",
+        time: new Date().toISOString(),
+        contentType: "text",
+      };
+
+      setConversations(
+        conversations.map((conv) => {
+          if (conv.id === currentConversationId) {
+            return {
+              ...conv,
+              messages: [...conv.messages, errorMessage],
+            };
+          }
+          return conv;
+        }),
+      );
     } finally {
       setIsLoading(false);
     }
