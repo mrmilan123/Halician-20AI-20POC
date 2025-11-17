@@ -50,7 +50,7 @@ export default function Chat() {
         // If no initial chat data, call initiate-chat
         if (!messages || messages.length === 0) {
           const response = await fetchWithAuth(
-            "http://localhost:5678/webhook/initiate-chat",
+            "/webhook/initiate-chat",
             {
               method: "POST",
               body: JSON.stringify({
