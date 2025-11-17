@@ -36,6 +36,9 @@ export function createServer() {
   app.post("/api/chat", handleChat);
 
   // Webhook routes
+  app.get("/webhook/user-details", handleUserDetails);
+  app.post("/webhook/create-case", handleCreateCase);
+  app.post("/webhook/load-case-conversation", handleLoadCaseConversation);
   app.post("/webhook/initiate-chat", handleInitiateChat);
   app.post("/webhook/ai-resp", handleAiResponse);
 
