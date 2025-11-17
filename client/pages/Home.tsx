@@ -100,11 +100,54 @@ export default function Home() {
     }
   };
 
-  const handleAddCaseSuccess = (newCase: Case) => {
+  const handleAddCaseSuccess = async (newCase: Case) => {
     setCases([...cases, newCase]);
     setShowAddCaseModal(false);
-    // After creating a case, navigate to chat with that case
-    navigate("/chat", { state: { caseId: newCase.caseId, chatData: [] } });
+
+    try {
+      setIsLoading(true);
+      setError("");
+
+      // Call initiate-chat API
+      const response = await fetchWithAuth(
+        "http://localhost:5678/webhook/initiate-chat",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            caseName: newCase.name,
+            caseType: newCase.type,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to initiate chat");
+      }
+
+      const chatInitData = await response.json();
+
+      // Create initial AI message from the initiate-chat response
+      const initialMessage = {
+        role: "assistant" as const,
+        content: chatInitData.content.message,
+        time: new Date().toISOString(),
+        contentType: (chatInitData.type || "text") as "text" | "image" | "video",
+      };
+
+      // Navigate to chat-screen with case data and initial message
+      navigate("/chat-screen", {
+        state: {
+          caseId: newCase.caseId,
+          chatData: [initialMessage],
+          caseName: newCase.name,
+          caseType: newCase.type,
+        }
+      });
+    } catch (err) {
+      setError("Failed to create case and initiate chat. Please try again.");
+      console.error("Error initiating chat:", err);
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = () => {
