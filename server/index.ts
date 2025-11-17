@@ -5,6 +5,7 @@ import path from "path";
 import { handleDemo } from "./routes/demo";
 import { handleSignup } from "./routes/signup";
 import { handleChat } from "./routes/chat";
+import { handleInitiateChat, handleAiResponse } from "./routes/webhook";
 
 export function createServer() {
   const app = express();
