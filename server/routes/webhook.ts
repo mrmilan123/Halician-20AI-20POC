@@ -74,7 +74,12 @@ export const handleSignUpUser: RequestHandler = async (req, res) => {
 export const handleUserDetails: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    const result = await forwardRequest("/user-details", "GET", undefined, authHeader);
+    const result = await forwardRequest(
+      "/user-details",
+      "GET",
+      undefined,
+      authHeader,
+    );
 
     if (result.ok) {
       res.status(result.status).json(result.data);
@@ -90,7 +95,12 @@ export const handleUserDetails: RequestHandler = async (req, res) => {
 export const handleCreateCase: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    const result = await forwardRequest("/create-case", "POST", req.body, authHeader);
+    const result = await forwardRequest(
+      "/create-case",
+      "POST",
+      req.body,
+      authHeader,
+    );
 
     if (result.ok) {
       res.status(result.status).json(result.data);
@@ -127,7 +137,12 @@ export const handleLoadCaseConversation: RequestHandler = async (req, res) => {
 export const handleInitiateChat: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    const result = await forwardRequest("/initiate-chat", "POST", req.body, authHeader);
+    const result = await forwardRequest(
+      "/initiate-chat",
+      "POST",
+      req.body,
+      authHeader,
+    );
 
     if (result.ok) {
       res.status(result.status).json(result.data);
@@ -143,7 +158,12 @@ export const handleInitiateChat: RequestHandler = async (req, res) => {
 export const handleAiResponse: RequestHandler = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    const result = await forwardRequest("/ai-resp", "POST", req.body, authHeader);
+    const result = await forwardRequest(
+      "/ai-resp",
+      "POST",
+      req.body,
+      authHeader,
+    );
 
     if (result.ok) {
       res.status(result.status).json(result.data);
