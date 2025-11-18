@@ -73,7 +73,8 @@ export const handleSignUpUser: RequestHandler = async (req, res) => {
 
 export const handleUserDetails: RequestHandler = async (req, res) => {
   try {
-    const result = await forwardRequest("/user-details", "GET");
+    const authHeader = req.headers.authorization;
+    const result = await forwardRequest("/user-details", "GET", undefined, authHeader);
 
     if (result.ok) {
       res.status(result.status).json(result.data);
