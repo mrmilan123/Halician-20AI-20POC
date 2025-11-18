@@ -137,6 +137,7 @@ export default function Home() {
           chatData: [initialMessage],
           caseName: newCase.name,
           caseType: newCase.type,
+          isNewCase: true,
         },
       });
     } catch (err) {
