@@ -32,7 +32,6 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get case data from navigation state
-  const location = useLocation();
   const caseId = (location.state as any)?.caseId;
   const initialChatData = (location.state as any)?.chatData;
   const caseName = (location.state as any)?.caseName;
