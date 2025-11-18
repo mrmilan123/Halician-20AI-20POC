@@ -89,7 +89,8 @@ export const handleUserDetails: RequestHandler = async (req, res) => {
 
 export const handleCreateCase: RequestHandler = async (req, res) => {
   try {
-    const result = await forwardRequest("/create-case", "POST", req.body);
+    const authHeader = req.headers.authorization;
+    const result = await forwardRequest("/create-case", "POST", req.body, authHeader);
 
     if (result.ok) {
       res.status(result.status).json(result.data);
