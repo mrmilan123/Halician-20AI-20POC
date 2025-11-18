@@ -142,7 +142,8 @@ export const handleInitiateChat: RequestHandler = async (req, res) => {
 
 export const handleAiResponse: RequestHandler = async (req, res) => {
   try {
-    const result = await forwardRequest("/ai-resp", "POST", req.body);
+    const authHeader = req.headers.authorization;
+    const result = await forwardRequest("/ai-resp", "POST", req.body, authHeader);
 
     if (result.ok) {
       res.status(result.status).json(result.data);
