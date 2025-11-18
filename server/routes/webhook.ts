@@ -105,10 +105,12 @@ export const handleCreateCase: RequestHandler = async (req, res) => {
 
 export const handleLoadCaseConversation: RequestHandler = async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
     const result = await forwardRequest(
       "/load-case-conversation",
       "POST",
       req.body,
+      authHeader,
     );
 
     if (result.ok) {
