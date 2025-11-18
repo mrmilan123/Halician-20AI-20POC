@@ -32,10 +32,12 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get case data from navigation state
+  const location = useLocation();
   const caseId = (location.state as any)?.caseId;
-  const initialChatData = (location.state as any)?.chatData || [];
+  const initialChatData = (location.state as any)?.chatData;
   const caseName = (location.state as any)?.caseName;
   const caseType = (location.state as any)?.caseType;
+  const isNewCase = (location.state as any)?.isNewCase || false;
 
   useEffect(() => {
     if (!caseId) {
@@ -45,10 +47,13 @@ export default function Chat() {
 
     const initializeChat = async () => {
       try {
-        let messages = initialChatData;
+        let messages: ChatMessage[] = [];
 
-        // If no initial chat data, call initiate-chat
-        if (!messages || messages.length === 0) {
+        // If data from load-case-conversation, use it directly
+        if (initialChatData && Array.isArray(initialChatData) && initialChatData.length > 0) {
+          messages = initialChatData;
+        } else {
+          // Only call initiate-chat for new cases or if no conversation data
           const response = await fetchWithAuth("/webhook/initiate-chat", {
             method: "POST",
             body: JSON.stringify({
@@ -91,7 +96,7 @@ export default function Chat() {
         const caseConversation: Conversation = {
           id: convId,
           title: caseName || `Case #${caseId}`,
-          messages: initialChatData,
+          messages: [],
         };
         setConversations([caseConversation]);
         setCurrentConversationId(convId);
@@ -99,7 +104,7 @@ export default function Chat() {
     };
 
     initializeChat();
-  }, [caseId, caseName, caseType, initialChatData, navigate, fetchWithAuth]);
+  }, [caseId]);
 
   const currentConversation = conversations.find(
     (c) => c.id === currentConversationId,
