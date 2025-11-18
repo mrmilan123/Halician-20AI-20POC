@@ -50,7 +50,11 @@ export default function Chat() {
         let messages: ChatMessage[] = [];
 
         // If data from load-case-conversation, use it directly
-        if (initialChatData && Array.isArray(initialChatData) && initialChatData.length > 0) {
+        if (
+          initialChatData &&
+          Array.isArray(initialChatData) &&
+          initialChatData.length > 0
+        ) {
           messages = initialChatData;
         } else {
           // Only call initiate-chat for new cases or if no conversation data
