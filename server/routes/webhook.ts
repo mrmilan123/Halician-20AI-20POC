@@ -2,13 +2,25 @@ import { RequestHandler } from "express";
 
 const BACKEND_BASE_URL = "http://localhost:5678/webhook";
 
-const forwardRequest = async (endpoint: string, method: string, body?: any) => {
+const forwardRequest = async (
+  endpoint: string,
+  method: string,
+  body?: any,
+  authHeader?: string,
+) => {
   try {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Add Authorization header if provided
+    if (authHeader) {
+      headers["Authorization"] = authHeader;
+    }
+
     const options: RequestInit = {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     };
 
     if (body) {
